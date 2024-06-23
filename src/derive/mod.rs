@@ -70,6 +70,13 @@ pub fn encode<T: Encode + ?Sized>(t: &T) -> Vec<u8> {
     encoder.collect()
 }
 
+pub fn encode_into<T: Encode + ?Sized>(out: &mut Vec<u8>, t: &T) {
+    let mut encoder = T::Encoder::default();
+    encoder.reserve(NonZeroUsize::new(1).unwrap());
+    encode_inline_never(&mut encoder, t);
+    encoder.collect_into(out)
+}
+
 /// Decodes a [`&[u8]`][`prim@slice`] into an instance of `T:` [`Decode`].
 ///
 /// **Warning:** The format is subject to change between major versions.
