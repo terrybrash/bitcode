@@ -1,6 +1,7 @@
 use crate::bool::{BoolDecoder, BoolEncoder};
 use crate::coder::{Buffer, Decoder, Encoder, Result, View};
 use crate::derive::array::{ArrayDecoder, ArrayEncoder};
+use crate::derive::convert::impl_convert;
 use crate::derive::empty::EmptyCoder;
 use crate::derive::map::{MapDecoder, MapEncoder};
 use crate::derive::option::{OptionDecoder, OptionEncoder};
@@ -16,6 +17,7 @@ use alloc::string::String;
 use alloc::vec::Vec;
 use core::marker::PhantomData;
 use core::mem::MaybeUninit;
+use core::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6};
 use core::num::*;
 
 macro_rules! impl_both {
@@ -164,7 +166,6 @@ impl<'a, T: Decode<'a>, E: Decode<'a>> Decode<'a> for core::result::Result<T, E>
 #[cfg(feature = "std")]
 mod with_std {
     use super::*;
-    use crate::derive::convert::impl_convert;
     use core::hash::{BuildHasher, Hash};
     use std::collections::{HashMap, HashSet};
 
@@ -182,29 +183,14 @@ mod with_std {
     {
         type Decoder = MapDecoder<'a, K, V>;
     }
-
-    macro_rules! impl_ipvx_addr {
-        ($addr: ident, $repr: ident) => {
-            impl_convert!(std::net::$addr, $repr);
-        };
-    }
-
-    impl_ipvx_addr!(Ipv4Addr, u32);
-    impl_ipvx_addr!(Ipv6Addr, u128);
-    impl_convert!(std::net::IpAddr, crate::derive::ip_addr::IpAddrConversion);
-    impl_convert!(
-        std::net::SocketAddrV4,
-        crate::derive::ip_addr::SocketAddrV4Conversion
-    );
-    impl_convert!(
-        std::net::SocketAddrV6,
-        crate::derive::ip_addr::SocketAddrV6Conversion
-    );
-    impl_convert!(
-        std::net::SocketAddr,
-        crate::derive::ip_addr::SocketAddrConversion
-    );
 }
+
+impl_convert!(Ipv4Addr, u32);
+impl_convert!(Ipv6Addr, u128);
+impl_convert!(IpAddr, crate::derive::ip_addr::IpAddrConversion);
+impl_convert!(SocketAddrV4, crate::derive::ip_addr::SocketAddrV4Conversion);
+impl_convert!(SocketAddrV6, crate::derive::ip_addr::SocketAddrV6Conversion);
+impl_convert!(SocketAddr, crate::derive::ip_addr::SocketAddrConversion);
 
 impl<T> Encode for PhantomData<T> {
     type Encoder = EmptyCoder;

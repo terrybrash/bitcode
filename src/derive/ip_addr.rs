@@ -1,5 +1,5 @@
 use super::convert::ConvertFrom;
-use std::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6};
+use core::net::{IpAddr, Ipv4Addr, Ipv6Addr, SocketAddr, SocketAddrV4, SocketAddrV6};
 
 macro_rules! ipvx_addr {
     ($addr: ident, $repr: ident) => {
@@ -20,7 +20,7 @@ macro_rules! ipvx_addr {
 ipvx_addr!(Ipv4Addr, u32);
 ipvx_addr!(Ipv6Addr, u128);
 
-pub(crate) type IpAddrConversion = std::result::Result<Ipv4Addr, Ipv6Addr>;
+pub(crate) type IpAddrConversion = core::result::Result<Ipv4Addr, Ipv6Addr>;
 
 impl ConvertFrom<&IpAddr> for IpAddrConversion {
     fn convert_from(value: &IpAddr) -> Self {
@@ -73,7 +73,7 @@ impl ConvertFrom<SocketAddrV6Conversion> for SocketAddrV6 {
     }
 }
 
-pub(crate) type SocketAddrConversion = std::result::Result<SocketAddrV4, SocketAddrV6>;
+pub(crate) type SocketAddrConversion = core::result::Result<SocketAddrV4, SocketAddrV6>;
 
 impl ConvertFrom<&SocketAddr> for SocketAddrConversion {
     fn convert_from(value: &SocketAddr) -> Self {
